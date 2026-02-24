@@ -5,6 +5,7 @@ import { FileText, MessageCircle, Plus, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { mockPropertyInterests, mockConversations, formatCurrency, formatDate } from "@/lib/mock-data"
+import { getTipoImovelLabel } from "@/lib/interest-labels"
 
 export default function ClientDashboardPage() {
   const activeInterests = mockPropertyInterests.filter((i) => i.isActive)
@@ -25,7 +26,6 @@ export default function ClientDashboardPage() {
         </Button>
       </div>
 
-      {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -66,7 +66,6 @@ export default function ClientDashboardPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Recent Interests */}
         <Card>
           <CardHeader>
             <CardTitle>Meus interesses recentes</CardTitle>
@@ -82,13 +81,13 @@ export default function ClientDashboardPage() {
                   >
                     <div className="space-y-1">
                       <p className="font-medium text-foreground">
-                        {interest.propertyType} - {interest.location}
+                        {getTipoImovelLabel(interest.tipoImovel)} - {interest.locations.join(", ")}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         {formatCurrency(interest.minPrice)} - {formatCurrency(interest.maxPrice)}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {interest.bedrooms} quartos • {interest.bathrooms} banheiros
+                        {interest.quartos} quartos • {interest.suites} suítes
                       </p>
                     </div>
                     <div className="text-right">
@@ -125,7 +124,6 @@ export default function ClientDashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Recent Conversations */}
         <Card>
           <CardHeader>
             <CardTitle>Conversas recentes</CardTitle>

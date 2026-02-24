@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { MessageCircle, Phone, Mail, MapPin, Home, DollarSign, Eye } from "lucide-react"
+import { MessageCircle, Phone, Mail, MapPin, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -16,6 +16,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { mockLeads, formatCurrency, formatDate, type Lead } from "@/lib/mock-data"
+import {
+  getCompraOuAluguelLabel,
+  getFinalidadeLabel,
+  getTipoImovelLabel,
+  getTipoCasaLabel,
+  getMobiliaLabel,
+} from "@/lib/interest-labels"
 
 export default function BrokerLeadsPage() {
   const router = useRouter()
@@ -23,7 +30,6 @@ export default function BrokerLeadsPage() {
   const [leads] = useState(mockLeads)
 
   const handleStartConversation = (leadId: string) => {
-    // In a real app, this would create a conversation and redirect
     router.push(`/corretor/chat/conv-${leadId}`)
   }
 
@@ -46,7 +52,6 @@ export default function BrokerLeadsPage() {
         </p>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap gap-2">
         <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80">
           Todos
@@ -75,11 +80,11 @@ export default function BrokerLeadsPage() {
                   <div className="flex items-start justify-between">
                     <div>
                       <CardTitle className="text-lg">
-                        {lead.interest.propertyType}
+                        {getTipoImovelLabel(lead.interest.tipoImovel)}
                       </CardTitle>
                       <CardDescription className="flex items-center gap-1">
                         <MapPin className="h-3 w-3" />
-                        {lead.interest.location}
+                        {lead.interest.locations.join(", ")}
                       </CardDescription>
                     </div>
                     <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${badge.className}`}>
@@ -88,36 +93,39 @@ export default function BrokerLeadsPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="flex flex-1 flex-col">
-                  <div className="flex-1 space-y-3">
-                    <div className="flex items-center gap-2 text-sm">
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
+                  <div className="flex-1 space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Compra ou aluguel:</span>
+                      <span className="text-foreground">{getCompraOuAluguelLabel(lead.interest.compraOuAluguel)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Finalidade:</span>
+                      <span className="text-foreground">{getFinalidadeLabel(lead.interest.finalidade)}</span>
+                    </div>
+                    {lead.interest.tipoCasa && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Sobrado ou térreo:</span>
+                        <span className="text-foreground">{getTipoCasaLabel(lead.interest.tipoCasa)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Quartos / Suítes:</span>
+                      <span className="text-foreground">{lead.interest.quartos} / {lead.interest.suites}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Terreno / Área const.:</span>
+                      <span className="text-foreground">{lead.interest.metragemTerreno}m² / {lead.interest.areaConstruida}m²</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Mobília:</span>
+                      <span className="text-foreground">{getMobiliaLabel(lead.interest.mobilia)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Valor:</span>
                       <span className="text-foreground">
                         {formatCurrency(lead.interest.minPrice)} - {formatCurrency(lead.interest.maxPrice)}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Home className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-foreground">
-                        {lead.interest.bedrooms} quartos, {lead.interest.bathrooms} banheiros
-                      </span>
-                    </div>
-                    {lead.interest.features.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {lead.interest.features.slice(0, 3).map((feature, idx) => (
-                          <span
-                            key={idx}
-                            className="rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground"
-                          >
-                            {feature}
-                          </span>
-                        ))}
-                        {lead.interest.features.length > 3 && (
-                          <span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">
-                            +{lead.interest.features.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    )}
                   </div>
 
                   <div className="mt-4 border-t border-border pt-4">
@@ -164,7 +172,6 @@ export default function BrokerLeadsPage() {
         </Card>
       )}
 
-      {/* Lead Detail Dialog */}
       <Dialog open={!!selectedLead} onOpenChange={() => setSelectedLead(null)}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
@@ -192,32 +199,54 @@ export default function BrokerLeadsPage() {
               </div>
 
               <div className="space-y-2">
-                <h4 className="text-sm font-medium text-foreground">Interesse</h4>
-                <div className="grid grid-cols-2 gap-2 text-sm">
+                <h4 className="text-sm font-medium text-foreground">Informações obrigatórias</h4>
+                <div className="grid gap-2 text-sm">
                   <div>
-                    <span className="text-muted-foreground">Tipo:</span>{" "}
-                    <span className="text-foreground">{selectedLead.interest.propertyType}</span>
+                    <span className="text-muted-foreground">Localização:</span>{" "}
+                    <span className="text-foreground">{selectedLead.interest.locations.join(", ")}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Local:</span>{" "}
-                    <span className="text-foreground">{selectedLead.interest.location}</span>
+                    <span className="text-muted-foreground">Compra ou aluguel:</span>{" "}
+                    <span className="text-foreground">{getCompraOuAluguelLabel(selectedLead.interest.compraOuAluguel)}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Preço:</span>{" "}
+                    <span className="text-muted-foreground">Finalidade:</span>{" "}
+                    <span className="text-foreground">{getFinalidadeLabel(selectedLead.interest.finalidade)}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Tipo do imóvel:</span>{" "}
+                    <span className="text-foreground">{getTipoImovelLabel(selectedLead.interest.tipoImovel)}</span>
+                  </div>
+                  {selectedLead.interest.tipoCasa && (
+                    <div>
+                      <span className="text-muted-foreground">Sobrado ou térreo:</span>{" "}
+                      <span className="text-foreground">{getTipoCasaLabel(selectedLead.interest.tipoCasa)}</span>
+                    </div>
+                  )}
+                  <div>
+                    <span className="text-muted-foreground">Quartos / Suítes:</span>{" "}
+                    <span className="text-foreground">{selectedLead.interest.quartos} / {selectedLead.interest.suites}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Metragem terreno / Área construída:</span>{" "}
+                    <span className="text-foreground">{selectedLead.interest.metragemTerreno}m² / {selectedLead.interest.areaConstruida}m²</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Mobília:</span>{" "}
+                    <span className="text-foreground">{getMobiliaLabel(selectedLead.interest.mobilia)}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Valor:</span>{" "}
                     <span className="text-foreground">
                       {formatCurrency(selectedLead.interest.minPrice)} - {formatCurrency(selectedLead.interest.maxPrice)}
                     </span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Quartos:</span>{" "}
-                    <span className="text-foreground">{selectedLead.interest.bedrooms}</span>
                   </div>
                 </div>
               </div>
 
               {selectedLead.interest.features.length > 0 && (
                 <div className="space-y-2">
-                  <h4 className="text-sm font-medium text-foreground">Características desejadas</h4>
+                  <h4 className="text-sm font-medium text-foreground">Características desejadas (opcional)</h4>
                   <div className="flex flex-wrap gap-1">
                     {selectedLead.interest.features.map((feature, idx) => (
                       <span
@@ -233,7 +262,7 @@ export default function BrokerLeadsPage() {
 
               {selectedLead.interest.notes && (
                 <div className="space-y-2">
-                  <h4 className="text-sm font-medium text-foreground">Observações</h4>
+                  <h4 className="text-sm font-medium text-foreground">Observações (opcional)</h4>
                   <p className="text-sm text-muted-foreground">
                     {selectedLead.interest.notes}
                   </p>

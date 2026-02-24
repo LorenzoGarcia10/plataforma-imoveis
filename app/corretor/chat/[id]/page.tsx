@@ -44,6 +44,7 @@ export default function BrokerChatPage() {
       currentUserId={user?.id || "2"}
       currentUserType="broker"
       onBack={() => router.push("/corretor/conversas")}
+      leadId={conversation.leadId}
     />
   )
 }

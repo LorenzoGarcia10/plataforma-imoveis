@@ -5,6 +5,7 @@ import { Users, MessageCircle, TrendingUp, ArrowRight, Bell } from "lucide-react
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { mockLeads, mockConversations, formatCurrency, formatDate } from "@/lib/mock-data"
+import { getTipoImovelLabel } from "@/lib/interest-labels"
 
 export default function BrokerDashboardPage() {
   const newLeads = mockLeads.filter((l) => l.status === "new")
@@ -25,7 +26,6 @@ export default function BrokerDashboardPage() {
         </Button>
       </div>
 
-      {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -70,7 +70,6 @@ export default function BrokerDashboardPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* New Leads */}
         <Card>
           <CardHeader>
             <CardTitle>Novos Leads</CardTitle>
@@ -89,7 +88,7 @@ export default function BrokerDashboardPage() {
                         {lead.interest.clientName}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {lead.interest.propertyType} - {lead.interest.location}
+                        {getTipoImovelLabel(lead.interest.tipoImovel)} - {lead.interest.locations.join(", ")}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         {formatCurrency(lead.interest.minPrice)} - {formatCurrency(lead.interest.maxPrice)}
@@ -126,7 +125,6 @@ export default function BrokerDashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Recent Conversations */}
         <Card>
           <CardHeader>
             <CardTitle>Conversas recentes</CardTitle>

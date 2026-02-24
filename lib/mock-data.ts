@@ -4,12 +4,18 @@ export interface PropertyInterest {
   clientName: string
   clientPhone: string
   clientEmail: string
-  propertyType: string
-  location: string
+  locations: string[]
+  compraOuAluguel: string
+  finalidade: string
+  tipoImovel: string
+  tipoCasa: string
+  quartos: string
+  suites: string
+  metragemTerreno: string
+  areaConstruida: string
+  mobilia: string
   minPrice: number
   maxPrice: number
-  bedrooms: number
-  bathrooms: number
   features: string[]
   notes: string
   createdAt: Date
@@ -60,7 +66,6 @@ export interface Broker {
   totalLeads: number
 }
 
-// Mock Property Interests
 export const mockPropertyInterests: PropertyInterest[] = [
   {
     id: "pi-1",
@@ -68,12 +73,18 @@ export const mockPropertyInterests: PropertyInterest[] = [
     clientName: "Maria Silva",
     clientPhone: "(11) 99999-9999",
     clientEmail: "maria@email.com",
-    propertyType: "Apartamento",
-    location: "São Paulo - Zona Sul",
+    locations: ["São Paulo - Zona Sul"],
+    compraOuAluguel: "compra",
+    finalidade: "residencial",
+    tipoImovel: "apartamento",
+    tipoCasa: "",
+    quartos: "2",
+    suites: "1",
+    metragemTerreno: "150",
+    areaConstruida: "80",
+    mobilia: "sem_mobilia",
     minPrice: 300000,
     maxPrice: 500000,
-    bedrooms: 2,
-    bathrooms: 1,
     features: ["Varanda", "Vaga de garagem", "Piscina"],
     notes: "Preferência por condomínio com área de lazer completa",
     createdAt: new Date("2026-01-15"),
@@ -85,12 +96,18 @@ export const mockPropertyInterests: PropertyInterest[] = [
     clientName: "Maria Silva",
     clientPhone: "(11) 99999-9999",
     clientEmail: "maria@email.com",
-    propertyType: "Casa",
-    location: "Santo André",
+    locations: ["Santo André"],
+    compraOuAluguel: "compra",
+    finalidade: "residencial",
+    tipoImovel: "casa_condominio",
+    tipoCasa: "terreo",
+    quartos: "3",
+    suites: "2",
+    metragemTerreno: "300",
+    areaConstruida: "180",
+    mobilia: "somente_planejados",
     minPrice: 450000,
     maxPrice: 700000,
-    bedrooms: 3,
-    bathrooms: 2,
     features: ["Quintal", "Churrasqueira", "Suite"],
     notes: "Aceito imóvel na planta",
     createdAt: new Date("2026-01-20"),
@@ -98,7 +115,6 @@ export const mockPropertyInterests: PropertyInterest[] = [
   },
 ]
 
-// Mock Leads
 export const mockLeads: Lead[] = [
   {
     id: "lead-1",
@@ -115,7 +131,6 @@ export const mockLeads: Lead[] = [
   },
 ]
 
-// Mock Conversations
 export const mockConversations: Conversation[] = [
   {
     id: "conv-1",
@@ -159,7 +174,6 @@ export const mockConversations: Conversation[] = [
   },
 ]
 
-// Mock Brokers
 export const mockBrokers: Broker[] = [
   {
     id: "2",
@@ -183,12 +197,7 @@ export const mockBrokers: Broker[] = [
   },
 ]
 
-export function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(value)
-}
+export { formatCurrency } from "@/lib/currency"
 
 export function formatDate(date: Date): string {
   return new Intl.DateTimeFormat("pt-BR", {

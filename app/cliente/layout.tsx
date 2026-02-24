@@ -1,8 +1,6 @@
 "use client"
 
-import React from "react"
-
-import { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -18,7 +16,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/lib/auth-context"
-import { useState } from "react"
+import { InterestsProvider } from "@/lib/contexts/interests-context"
 
 const navigation = [
   { name: "Dashboard", href: "/cliente/dashboard", icon: LayoutDashboard },
@@ -155,7 +153,9 @@ export default function ClientLayout({
         </header>
 
         {/* Page content */}
-        <main className="flex-1 p-4 lg:p-6">{children}</main>
+        <main className="flex-1 p-4 lg:p-6">
+          <InterestsProvider>{children}</InterestsProvider>
+        </main>
       </div>
     </div>
   )
